@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* Cores e fontes conforme o enunciado */
 :root {
     --primaria: #0EA5E9;
@@ -73,3 +74,6 @@ footer {
     margin-top: 2rem;
     font-size: 0.9rem;
 }
+=======
+# dw2_laurasaab_vendas
+>>>>>>> f4397ecc89b838dcbff1df0fd4d730c55e16db8c
