@@ -1,0 +1,75 @@
+/* Cores e fontes conforme o enunciado */
+:root {
+    --primaria: #0EA5E9;
+    --secundaria: #EF4444;
+    --acento: #22C55E;
+    --fundo: #FFFFFF;
+    --texto: #111827;
+    --fonte: 'Poppins', 'Inter', sans-serif;
+}
+
+body {
+    background: var(--fundo);
+    color: var(--texto);
+    font-family: var(--fonte);
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background: var(--primaria);
+    color: #fff;
+    padding: 1rem;
+    text-align: center;
+}
+
+h1, h2 {
+    font-weight: 600;
+}
+
+main {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: center;
+    padding: 2rem;
+}
+
+#produtos, #carrinho {
+    background: #f9fafb;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    padding: 1.5rem;
+    min-width: 320px;
+    max-width: 400px;
+    flex: 1 1 320px;
+}
+
+#lista-produtos, #lista-carrinho {
+    margin-top: 1rem;
+}
+
+button {
+    background: var(--primaria);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: background 0.2s;
+}
+
+button:hover {
+    background: var(--acento);
+}
+
+footer {
+    background: #f1f5f9;
+    color: var(--texto);
+    text-align: center;
+    padding: 1rem;
+    margin-top: 2rem;
+    font-size: 0.9rem;
+}
