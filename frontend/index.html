@@ -1,33 +1,86 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Projeto Vendas Web</title>
-    <link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Loja Escolar</title>
+  <meta name="description" content="Catálogo de produtos com carrinho e cupom." />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
 </head>
 <body>
-    <header>
-        <h1>Bem-vindo ao Projeto Vendas Web</h1>
-    </header>
-    <main>
-        <section id="produtos">
-            <h2>Produtos</h2>
-            <div id="lista-produtos">
-                <!-- Os produtos serão carregados aqui -->
-            </div>
-        </section>
-        <section id="carrinho">
-            <h2>Carrinho</h2>
-            <div id="lista-carrinho">
-                <!-- Itens do carrinho serão exibidos aqui -->
-            </div>
-            <button id="finalizar-compra">Finalizar Compra</button>
-        </section>
-    </main>
-    <footer>
-        <p>&copy; 2023 Projeto Vendas Web</p>
-    </footer>
-    <script src="js/main.js"></script>
+  <header>
+    <div class="header-content">
+      <img src="logo.svg" alt="Logo Loja Escolar" class="logo" aria-label="Logomarca Loja Escolar"/>
+      <h1>Loja Escolar</h1>
+      <button id="btn-carrinho" aria-label="Abrir carrinho" aria-haspopup="dialog" aria-expanded="false">
+        <span class="material-icons" aria-hidden="true">shopping_cart</span>
+        <span id="badge-carrinho" class="badge">0</span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section id="produtos" aria-label="Catálogo de produtos">
+      <div class="produtos-header">
+        <input type="text" id="busca-produto" placeholder="Buscar produto..." aria-label="Buscar produto por nome" />
+        <select id="ordenar" aria-label="Ordenar produtos">
+          <option value="nome-asc">Nome (A–Z)</option>
+          <option value="preco-asc">Preço (menor→maior)</option>
+          <option value="preco-desc">Preço (maior→menor)</option>
+        </select>
+        <button id="btn-limpar" type="button" class="icon">Limpar filtros</button>
+        <button id="btn-export-json" type="button" class="icon">Exportar JSON</button>
+        <button id="btn-export-csv" type="button" class="icon">Exportar CSV</button>
+      </div>
+
+      <div id="lista-produtos" class="grid-produtos" aria-live="polite">
+        <!-- Cards via JS -->
+      </div>
+
+      <div style="display:flex;justify-content:center;margin-top:1rem;">
+        <button id="btn-mais" type="button" style="display:none;">Carregar mais</button>
+      </div>
+    </section>
+
+    <!-- Overlay + Drawer do carrinho -->
+    <div id="overlay" hidden></div>
+    <aside id="drawer-carrinho" role="dialog" aria-modal="true" aria-labelledby="titulo-carrinho" hidden>
+      <div class="drawer-header">
+        <h2 id="titulo-carrinho">Seu carrinho</h2>
+        <button id="fechar-carrinho" aria-label="Fechar carrinho" class="icon">
+          <span class="material-icons" aria-hidden="true">close</span>
+        </button>
+      </div>
+
+      <div id="lista-carrinho" class="lista-carrinho" aria-live="polite"></div>
+
+      <div class="cupom-area">
+        <label for="input-cupom">Cupom:</label>
+        <input id="input-cupom" type="text" placeholder="ALUNO10" aria-label="Código de cupom"/>
+        <button id="btn-aplicar-cupom" type="button" aria-pressed="false">Aplicar</button>
+        <button id="btn-remover-cupom" type="button" class="icon">Remover</button>
+      </div>
+
+      <div class="totais">
+        <div>Subtotal: <strong id="subtotal">R$ 0,00</strong></div>
+        <div>Desconto: <strong id="desconto">R$ 0,00</strong></div>
+        <div>Total: <strong id="total">R$ 0,00</strong></div>
+      </div>
+
+      <button id="finalizar-compra" type="button" style="width:100%;">Finalizar compra</button>
+    </aside>
+
+    <!-- Área para feedback acessível -->
+    <div id="sr-live" class="sr-only" aria-live="assertive"></div>
+  </main>
+
+  <footer>
+    Loja Escolar &copy; 2025
+  </footer>
+
+  <script src="js/main.js"></script>
 </body>
 </html>
+
