@@ -3,28 +3,24 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Moda Urbana</title>
-  <meta name="description" content="Loja de roupas - catálogo com carrinho e cupom ALUNO10." />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/style.css" />
+  <title>Pink Store</title>
+  <meta name="description" content="Pink Store - catálogo de roupas com carrinho e cupom ALUNO10." />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css?v=dark-pink" />
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
 </head>
 <body>
-  <!-- Header -->
   <header>
     <div class="header-content">
-      <img src="logo.svg" alt="Logo Moda Urbana" class="logo" aria-label="Logomarca Moda Urbana"/>
-      <h1>Moda Urbana</h1>
+      <img src="logo.svg" alt="Logo Pink Store" class="logo" />
       <div class="header-actions">
         <input type="text" id="busca-produto" placeholder="Buscar peça..." aria-label="Buscar produto por nome" />
         <select id="categoria" aria-label="Filtrar por categoria">
           <option value="">Todas</option>
-          <option value="Camisetas">Camisetas</option>
           <option value="Calças">Calças</option>
-          <option value="Moletons">Moletons</option>
-          <option value="Vestidos">Vestidos</option>
-          <option value="Acessórios">Acessórios</option>
-          <option value="Calçados">Calçados</option>
+          <option value="Bodies">Bodies</option>
+          <option value="Croppeds">Croppeds</option>
+          <option value="Shorts">Shorts</option>
         </select>
         <select id="ordenar" aria-label="Ordenar produtos">
           <option value="nome-asc">Nome (A–Z)</option>
@@ -34,11 +30,7 @@
         <button id="btn-limpar" type="button" class="icon">Limpar</button>
         <button id="btn-export-json" type="button" class="icon">Exportar JSON</button>
         <button id="btn-export-csv" type="button" class="icon">Exportar CSV</button>
-        <button id="btn-carrinho"
-                aria-label="Abrir carrinho"
-                aria-haspopup="dialog"
-                aria-expanded="false"
-                aria-controls="drawer-carrinho">
+        <button id="btn-carrinho" aria-label="Abrir carrinho" aria-haspopup="dialog" aria-expanded="false" aria-controls="drawer-carrinho">
           <span class="material-icons" aria-hidden="true">shopping_cart</span>
           <span id="badge-carrinho" class="badge">0</span>
         </button>
@@ -46,9 +38,7 @@
     </div>
   </header>
 
-  <!-- Conteúdo principal -->
   <main>
-    <!-- Catálogo -->
     <section id="produtos" aria-label="Catálogo de produtos">
       <div id="lista-produtos" class="grid-produtos" role="list" aria-live="polite"></div>
       <div style="display:flex;justify-content:center;margin-top:1rem;">
@@ -56,7 +46,6 @@
       </div>
     </section>
 
-    <!-- Overlay + Drawer carrinho -->
     <div id="overlay" hidden></div>
     <aside id="drawer-carrinho" role="dialog" aria-modal="true" aria-labelledby="titulo-carrinho" hidden>
       <div class="drawer-header">
@@ -81,20 +70,13 @@
         <div>Total: <strong id="total">R$ 0,00</strong></div>
       </div>
 
-      <button id="finalizar-compra" type="button" style="width:100%;">Finalizar compra</button>
+      <button id="finalizar-compra" type="button" class="btn-brilho" style="width:100%;">Finalizar compra</button>
     </aside>
 
-    <!-- Feedback acessível -->
     <div id="sr-live" class="sr-only" aria-live="assertive"></div>
   </main>
 
-  <!-- Rodapé -->
-  <footer>
-    Moda Urbana &copy; 2025
-  </footer>
-
-  <script src="js/main.js"></script>
+  <footer>Pink Store &copy; 2025</footer>
+  <script src="js/main.js?v=2"></script>
 </body>
 </html>
-
-
