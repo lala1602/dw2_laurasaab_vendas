@@ -259,23 +259,34 @@ elRemoverCupom?.addEventListener('click', () => {
   cupom = ''; saveCupom(cupom); elInputCupom.value = ''; calcularTotais(); anunciar('Cupom removido.');
 });
 
-// Finalizar (simulação)
+// Finalizar (redireciona para cadastro)
 elFinalizar?.addEventListener('click', () => {
   if (carrinho.length === 0) { alert('O carrinho está vazio!'); return; }
+  // Verificar estoque antes de prosseguir
   for (const item of carrinho) {
     const p = produtos.find(p => p.id === item.id);
     if (!p || item.qtd > p.estoque) { alert(`Estoque insuficiente para ${item?.nome ?? 'produto'}.`); return; }
   }
-  for (const item of carrinho) {
-    const p = produtos.find(p => p.id === item.id);
-    p.estoque -= item.qtd;
+
+  // Preparar resumo do pedido
+  const subtotal = carrinho.reduce((s,i)=> s + i.preco * i.qtd, 0);
+  let desconto = 0; if (cupom === 'ALUNO10') desconto = subtotal * 0.10;
+  const total = Math.max(0, subtotal - desconto);
+
+  const pedido = {
+    itens: structuredClone(carrinho),
+    subtotal, desconto, total,
+    criadoEm: new Date().toISOString()
+  };
+
+  // Salvar pedido temporariamente e redirecionar para a página de cadastro
+  try {
+    localStorage.setItem('ps_pedido', JSON.stringify(pedido));
+    window.location.href = 'cadastro.html';
+  } catch (err) {
+    console.error('Erro ao salvar pedido:', err);
+    alert('Não foi possível iniciar o checkout. Tente novamente.');
   }
-  saveProdutos(produtos);
-  carrinho = []; saveCarrinho(carrinho);
-  cupom = ''; saveCupom(cupom);
-  renderProdutos(); renderCarrinho();
-  anunciar('Pedido confirmado! Estoques atualizados.');
-  alert('Compra finalizada! (simulação)');
 });
 
 // ---------- Exportações ----------

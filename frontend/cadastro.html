@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Cadastro — Pink Store</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css?v=dark-pink" />
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <img src="assets/logo.svg" alt="Logo Pink Store" class="logo" />
+    </div>
+  </header>
+
+  <main style="max-width:720px;margin:48px auto;padding:0 18px;">
+    <section class="card-produto" style="padding:2rem;">
+      <h1 style="margin-bottom:1rem;">Finalize seu pedido</h1>
+      <p id="resumo-pedido" style="color:#b8bac0;margin-bottom:1rem;"></p>
+
+      <form id="form-cadastro" style="display:grid;gap:.75rem;">
+        <label>
+          Nome completo
+          <input id="nome" type="text" required />
+        </label>
+        <label>
+          Email
+          <input id="email" type="email" required />
+        </label>
+        <label>
+          Telefone
+          <input id="telefone" type="tel" />
+        </label>
+        <label>
+          Endereço
+          <input id="endereco" type="text" required />
+        </label>
+
+        <button id="btn-confirmar" type="submit" class="btn-brilho">Confirmar cadastro e concluir</button>
+      </form>
+
+      <p id="msg-status" style="margin-top:1rem;color:#b8bac0;"></p>
+    </section>
+  </main>
+
+  <footer>Pink Store &copy; 2025</footer>
+  <script>
+    // Carregar resumo do pedido salvo
+    const resumoEl = document.getElementById('resumo-pedido');
+    const pedido = JSON.parse(localStorage.getItem('ps_pedido') || 'null');
+    if (!pedido) {
+      resumoEl.textContent = 'Nenhum pedido encontrado. Volte ao site e adicione itens ao carrinho.';
+    } else {
+      resumoEl.innerHTML = `Você está prestes a comprar <strong>${pedido.itens.length}</strong> itens. Total: <strong>${new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(pedido.total)}</strong>`;
+    }
+
+    const form = document.getElementById('form-cadastro');
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const dados = {
+        nome: document.getElementById('nome').value,
+        email: document.getElementById('email').value,
+        telefone: document.getElementById('telefone').value,
+        endereco: document.getElementById('endereco').value,
+        pedido: pedido
+      };
+      // Simular envio e limpar pedido/carrinho
+      try {
+        localStorage.setItem('ps_cliente', JSON.stringify(dados));
+        localStorage.removeItem('ps_carrinho');
+        localStorage.removeItem('ps_pedido');
+        document.getElementById('msg-status').textContent = 'Cadastro recebido! Obrigada. Você será redirecionada...';
+        setTimeout(() => { window.location.href = 'index.html'; }, 2000);
+      } catch (err) {
+        document.getElementById('msg-status').textContent = 'Erro ao processar. Tente novamente.';
+      }
+    });
+  </script>
+</body>
+</html>

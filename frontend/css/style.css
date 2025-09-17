@@ -30,7 +30,7 @@ header{
   display:flex; align-items: center; justify-content: space-between; gap:1rem;
 }
 .header-actions{ display:flex; gap:.6rem; align-items:center; flex-wrap:wrap; }
-.logo{ height: 44px; }
+.logo{ height: 56px; }
 
 /* Inputs */
 input[type="text"], select{
