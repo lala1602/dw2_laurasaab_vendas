@@ -241,17 +241,17 @@ function removerDoCarrinho(id) {
 function calcularTotais() {
   const subtotal = carrinho.reduce((s,i)=> s + i.preco * i.qtd, 0);
   let desconto = 0;
-  if (cupom === 'ALUNO10') desconto = subtotal * 0.10;
+  if (cupom === 'BEMVINDO10') desconto = subtotal * 0.10;
   const total = Math.max(0, subtotal - desconto);
   elSubtotal.textContent = fmtBRL(subtotal);
   elDesconto.textContent = fmtBRL(desconto);
   elTotal.textContent = fmtBRL(total);
-  elAplicarCupom.setAttribute('aria-pressed', cupom === 'ALUNO10' ? 'true' : 'false');
+  elAplicarCupom.setAttribute('aria-pressed', cupom === 'BEMVINDO10' ? 'true' : 'false');
 }
 
 elAplicarCupom?.addEventListener('click', () => {
   const code = (elInputCupom.value || '').trim().toUpperCase();
-  if (code === 'ALUNO10') {
+  if (code === 'BEMVINDO10') {
     cupom = code; saveCupom(cupom); calcularTotais(); anunciar('Cupom aplicado com sucesso.');
   } else { anunciar('Cupom inválido.'); }
 });
@@ -270,7 +270,7 @@ elFinalizar?.addEventListener('click', () => {
 
   // Preparar resumo do pedido
   const subtotal = carrinho.reduce((s,i)=> s + i.preco * i.qtd, 0);
-  let desconto = 0; if (cupom === 'ALUNO10') desconto = subtotal * 0.10;
+  let desconto = 0; if (cupom === 'BEMVINDO10') desconto = subtotal * 0.10;
   const total = Math.max(0, subtotal - desconto);
 
   const pedido = {
@@ -335,7 +335,6 @@ elBtnCarrinho?.addEventListener('click', (e) => { e.preventDefault(); abrirCarri
 
 // Listener direto no botão fechar (garante que clique no botão ou no ícone interno feche o drawer)
 elFecharCarrinho?.addEventListener('click', (e) => { console.log('fechar-carrinho click', e.target); e.preventDefault(); fecharCarrinho(); });
-// Também aceitar pointerdown (toque) e teclado (Enter/Space)
 elFecharCarrinho?.addEventListener('pointerdown', (e) => { console.log('fechar-carrinho pointerdown', e.target); e.preventDefault(); fecharCarrinho(); });
 elFecharCarrinho?.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { console.log('fechar-carrinho keydown', e.key); e.preventDefault(); fecharCarrinho(); } });
 
