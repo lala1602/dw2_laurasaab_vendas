@@ -241,17 +241,17 @@ function removerDoCarrinho(id) {
 function calcularTotais() {
   const subtotal = carrinho.reduce((s,i)=> s + i.preco * i.qtd, 0);
   let desconto = 0;
-  if (cupom === 'BEMVINDO10') desconto = subtotal * 0.10;
+  if (cupom === 'ALUNO10') desconto = subtotal * 0.10;
   const total = Math.max(0, subtotal - desconto);
   elSubtotal.textContent = fmtBRL(subtotal);
   elDesconto.textContent = fmtBRL(desconto);
   elTotal.textContent = fmtBRL(total);
-  elAplicarCupom.setAttribute('aria-pressed', cupom === 'BEMVINDO10' ? 'true' : 'false');
+  elAplicarCupom.setAttribute('aria-pressed', cupom === 'ALUNO10' ? 'true' : 'false');
 }
 
 elAplicarCupom?.addEventListener('click', () => {
   const code = (elInputCupom.value || '').trim().toUpperCase();
-  if (code === 'BEMVINDO10') {
+  if (code === 'ALUNO10') {
     cupom = code; saveCupom(cupom); calcularTotais(); anunciar('Cupom aplicado com sucesso.');
   } else { anunciar('Cupom inválido.'); }
 });
@@ -259,34 +259,23 @@ elRemoverCupom?.addEventListener('click', () => {
   cupom = ''; saveCupom(cupom); elInputCupom.value = ''; calcularTotais(); anunciar('Cupom removido.');
 });
 
-// Finalizar (redireciona para cadastro)
+// Finalizar (simulação)
 elFinalizar?.addEventListener('click', () => {
   if (carrinho.length === 0) { alert('O carrinho está vazio!'); return; }
-  // Verificar estoque antes de prosseguir
   for (const item of carrinho) {
     const p = produtos.find(p => p.id === item.id);
     if (!p || item.qtd > p.estoque) { alert(`Estoque insuficiente para ${item?.nome ?? 'produto'}.`); return; }
   }
-
-  // Preparar resumo do pedido
-  const subtotal = carrinho.reduce((s,i)=> s + i.preco * i.qtd, 0);
-  let desconto = 0; if (cupom === 'BEMVINDO10') desconto = subtotal * 0.10;
-  const total = Math.max(0, subtotal - desconto);
-
-  const pedido = {
-    itens: structuredClone(carrinho),
-    subtotal, desconto, total,
-    criadoEm: new Date().toISOString()
-  };
-
-  // Salvar pedido temporariamente e redirecionar para a página de cadastro
-  try {
-    localStorage.setItem('ps_pedido', JSON.stringify(pedido));
-    window.location.href = 'cadastro.html';
-  } catch (err) {
-    console.error('Erro ao salvar pedido:', err);
-    alert('Não foi possível iniciar o checkout. Tente novamente.');
+  for (const item of carrinho) {
+    const p = produtos.find(p => p.id === item.id);
+    p.estoque -= item.qtd;
   }
+  saveProdutos(produtos);
+  carrinho = []; saveCarrinho(carrinho);
+  cupom = ''; saveCupom(cupom);
+  renderProdutos(); renderCarrinho();
+  anunciar('Pedido confirmado! Estoques atualizados.');
+  alert('Compra finalizada! (simulação)');
 });
 
 // ---------- Exportações ----------
@@ -315,132 +304,99 @@ function baixarArquivo(blob, nome) {
 // ---------- Drawer (robusto) ----------
 function abrirCarrinho() {
   console.log('abrirCarrinho() chamado');
-  const elOverlay = document.getElementById('overlay');
-  const elDrawer = document.getElementById('drawer-carrinho');
-  const elBtnCarrinho = document.getElementById('btn-carrinho');
-  const elFecharCarrinho = document.getElementById('fechar-carrinho');
-
-  if (elOverlay) elOverlay.hidden = false;
-  if (elDrawer) elDrawer.hidden = false;
-  if (elBtnCarrinho) elBtnCarrinho.setAttribute('aria-expanded', 'true');
-  if (elFecharCarrinho) elFecharCarrinho.focus();
+  elOverlay.hidden = false;
+  elDrawer.hidden = false;
+  elBtnCarrinho?.setAttribute('aria-expanded', 'true');
+  elFecharCarrinho?.focus();
 }
 function fecharCarrinho() {
   console.log('fecharCarrinho() chamado');
-  const elOverlay = document.getElementById('overlay');
-  const elDrawer = document.getElementById('drawer-carrinho');
-  const elBtnCarrinho = document.getElementById('btn-carrinho');
-
-  if (elOverlay) elOverlay.hidden = true;
-  if (elDrawer) elDrawer.hidden = true;
-  if (elBtnCarrinho) elBtnCarrinho.setAttribute('aria-expanded', 'false');
-  if (elBtnCarrinho) elBtnCarrinho.focus();
+  elOverlay.hidden = true;
+  elDrawer.hidden = true;
+  elBtnCarrinho?.setAttribute('aria-expanded', 'false');
+  elBtnCarrinho?.focus();
 }
 // Expor a função globalmente para onclick="fecharCarrinho()" funcionar sem problemas
 window.fecharCarrinho = fecharCarrinho;
 
-// Observação: os event listeners são registrados dentro de setupDrawerHandlers(),
-// que é chamada durante init() (após DOMContentLoaded). Isso evita problemas
-// quando o script for avaliado antes dos elementos existirem.
-function setupDrawerHandlers() {
-  const elBtnCarrinho = document.getElementById('btn-carrinho');
-  const elOverlay = document.getElementById('overlay');
-  const elDrawer = document.getElementById('drawer-carrinho');
-  const elFecharCarrinho = document.getElementById('fechar-carrinho');
+// Abrir pelo botão do carrinho
+elBtnCarrinho?.addEventListener('click', (e) => { e.preventDefault(); abrirCarrinho(); });
 
-  if (!elDrawer) return; // nada a fazer sem o drawer
+// Listener direto no botão fechar (garante que clique no botão ou no ícone interno feche o drawer)
+elFecharCarrinho?.addEventListener('click', (e) => { console.log('fechar-carrinho click', e.target); e.preventDefault(); fecharCarrinho(); });
+// Também aceitar pointerdown (toque) e teclado (Enter/Space)
+elFecharCarrinho?.addEventListener('pointerdown', (e) => { console.log('fechar-carrinho pointerdown', e.target); e.preventDefault(); fecharCarrinho(); });
+elFecharCarrinho?.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { console.log('fechar-carrinho keydown', e.key); e.preventDefault(); fecharCarrinho(); } });
 
-  // Ajuste fino: compensar a largura da scrollbar do sistema para evitar que
-  // o drawer seja cortado em navegadores/OS onde a scrollbar ocupa espaço.
-  function ajustarDrawerParaScrollbar() {
-    const sb = window.innerWidth - document.documentElement.clientWidth; // largura da scrollbar em px
-    // Aplicar deslocamento pequeno para a direita se houver scrollbar
-    // deixamos 4px de folga para não encostar demais
-    const offset = Math.max(0, sb - 4);
-    elDrawer.style.right = `${offset}px`;
+// Listener no ícone interno (Material Icons) também — alguns browsers direcionam target para o <span>
+const elFecharIcon = elFecharCarrinho?.querySelector('.material-icons');
+elFecharIcon?.addEventListener('click', (e) => { console.log('fechar-carrinho icon click', e.target); e.preventDefault(); fecharCarrinho(); });
+elFecharIcon?.addEventListener('pointerdown', (e) => { console.log('fechar-carrinho icon pointerdown', e.target); e.preventDefault(); fecharCarrinho(); });
+
+// Garantir handler direto caso outras listeners não capturem
+if (elFecharCarrinho) {
+  elFecharCarrinho.onclick = (e) => { console.log('fechar-carrinho onclick fallback'); e.preventDefault(); fecharCarrinho(); };
+  elFecharCarrinho.onpointerdown = (e) => { console.log('fechar-carrinho onpointerdown fallback'); e.preventDefault(); fecharCarrinho(); };
+}
+
+// Listener direto no overlay (fechar ao clicar fora)
+elOverlay?.addEventListener('click', (e) => { if (e.target === elOverlay) fecharCarrinho(); });
+
+// Fechar por X (mesmo clicando no <span> interno), overlay e qualquer [data-close="drawer"]
+document.addEventListener('click', (e) => {
+  const target = e.target;
+  // Use contains() para cobrir cliques em nós de texto dentro do botão
+  const isX = elFecharCarrinho && elFecharCarrinho.contains(target);
+  const isOverlay = target === elOverlay;
+  const isDataClose = target.closest && target.closest('[data-close="drawer"]');
+  if (isX || isOverlay || isDataClose) {
+    e.preventDefault();
+    fecharCarrinho();
   }
-  ajustarDrawerParaScrollbar();
-  window.addEventListener('resize', ajustarDrawerParaScrollbar);
+});
 
-  // Abrir pelo botão do carrinho
-  if (elBtnCarrinho) elBtnCarrinho.addEventListener('click', (e) => { e.preventDefault(); abrirCarrinho(); });
+// ESC fecha
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && !elDrawer.hidden) fecharCarrinho();
+});
 
-  // Listener direto no botão fechar (garante que clique no botão ou no ícone interno feche o drawer)
-  if (elFecharCarrinho) {
-    elFecharCarrinho.addEventListener('click', (e) => { console.log('fechar-carrinho click', e.target); e.preventDefault(); fecharCarrinho(); });
-    elFecharCarrinho.addEventListener('pointerdown', (e) => { console.log('fechar-carrinho pointerdown', e.target); e.preventDefault(); fecharCarrinho(); });
-    elFecharCarrinho.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { console.log('fechar-carrinho keydown', e.key); e.preventDefault(); fecharCarrinho(); } });
+// Garantir que o botão de fechar aceite eventos (caso algum estilo o tenha desabilitado)
+if (elFecharCarrinho) elFecharCarrinho.style.pointerEvents = 'auto';
 
-    // Garantir handler direto caso outras listeners não capturem
-    elFecharCarrinho.onclick = (e) => { console.log('fechar-carrinho onclick fallback'); e.preventDefault(); fecharCarrinho(); };
-    elFecharCarrinho.onpointerdown = (e) => { console.log('fechar-carrinho onpointerdown fallback'); e.preventDefault(); fecharCarrinho(); };
-
-    // Garantir que o botão de fechar aceite eventos (caso algum estilo o tenha desabilitado)
-    elFecharCarrinho.style.pointerEvents = 'auto';
-
-    // Listener no ícone interno (Material Icons) também — alguns browsers direcionam target para o <span>
-    const elFecharIcon = elFecharCarrinho.querySelector('.material-icons');
-    if (elFecharIcon) {
-      elFecharIcon.addEventListener('click', (e) => { console.log('fechar-carrinho icon click', e.target); e.preventDefault(); fecharCarrinho(); });
-      elFecharIcon.addEventListener('pointerdown', (e) => { console.log('fechar-carrinho icon pointerdown', e.target); e.preventDefault(); fecharCarrinho(); });
+// Listener em capture phase para detectar cliques mesmo quando o evento for interceptado por filhos
+document.addEventListener('pointerdown', (e) => {
+  try {
+    const path = e.composedPath ? e.composedPath() : (e.path || []);
+    for (const node of path) {
+      if (node && node.id === 'fechar-carrinho') {
+        console.log('pointerdown capturado via composedPath para fechar');
+        e.preventDefault();
+        fecharCarrinho();
+        return;
+      }
     }
+  } catch (err) {
+    // não falhar se composedPath não estiver disponível
   }
+}, true);
 
-  // Listener direto no overlay (fechar ao clicar fora)
-  if (elOverlay) elOverlay.addEventListener('click', (e) => { if (e.target === elOverlay) fecharCarrinho(); });
-
-  // Fechar por X (mesmo clicando no <span> interno), overlay e qualquer [data-close="drawer"]
-  document.addEventListener('click', (e) => {
-    const target = e.target;
-    const isX = elFecharCarrinho && elFecharCarrinho.contains(target);
-    const isOverlay = target === elOverlay;
-    const isDataClose = target.closest && target.closest('[data-close="drawer"]');
-    if (isX || isOverlay || isDataClose) {
+// Fallback final: se algum elemento invisível estiver interceptando, detecte posição do clique
+// e feche caso as coordenadas estejam sobre o botão de fechar.
+document.addEventListener('pointerdown', (e) => {
+  try {
+    if (!elFecharCarrinho || elDrawer.hidden) return;
+    const rect = elFecharCarrinho.getBoundingClientRect();
+    const x = e.clientX;
+    const y = e.clientY;
+    if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
+      console.log('pointerdown dentro das coordenadas do botão fechar — fallback');
       e.preventDefault();
       fecharCarrinho();
     }
-  });
-
-  // ESC fecha
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && elDrawer && !elDrawer.hidden) fecharCarrinho();
-  });
-
-  // Listener em capture phase para detectar cliques mesmo quando o evento for interceptado por filhos
-  document.addEventListener('pointerdown', (e) => {
-    try {
-      const path = e.composedPath ? e.composedPath() : (e.path || []);
-      for (const node of path) {
-        if (node && node.id === 'fechar-carrinho') {
-          console.log('pointerdown capturado via composedPath para fechar');
-          e.preventDefault();
-          fecharCarrinho();
-          return;
-        }
-      }
-    } catch (err) {
-      // não falhar se composedPath não estiver disponível
-    }
-  }, true);
-
-  // Fallback final: se algum elemento invisível estiver interceptando, detecte posição do clique
-  // e feche caso as coordenadas estejam sobre o botão de fechar.
-  document.addEventListener('pointerdown', (e) => {
-    try {
-      if (!elFecharCarrinho || elDrawer.hidden) return;
-      const rect = elFecharCarrinho.getBoundingClientRect();
-      const x = e.clientX;
-      const y = e.clientY;
-      if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
-        console.log('pointerdown dentro das coordenadas do botão fechar — fallback');
-        e.preventDefault();
-        fecharCarrinho();
-      }
-    } catch (err) {
-      // ignore
-    }
-  }, true);
-}
+  } catch (err) {
+    // ignore
+  }
+}, true);
 
 // ---------- Busca / Ordenação / Categoria / Paginação ----------
 elOrdenar.value = loadOrdenacao();
@@ -478,9 +434,8 @@ function init() {
   renderCarrinho();
   if (cupom) elInputCupom.value = cupom;
   calcularTotais();
-
-  // Configurar handlers e ajustes do drawer após o DOM estar pronto
-  if (typeof setupDrawerHandlers === 'function') setupDrawerHandlers();
 }
-document.addEventListener('DOMContentLoaded', init);
+
+// Inicializa a aplicação
+init();
 

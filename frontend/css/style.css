@@ -9,16 +9,14 @@
   --fonte:'Poppins', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
 }
 
-/* Restaurar fundo preto global */
-html, body {
-  background: var(--preto) !important;
-  color: var(--branco) !important;
-}
-
 *{ box-sizing:border-box; margin:0; padding:0; }
 html,body{ height:100%; }
-/* Evitar que a página crie um overflow horizontal que empurre o drawer */
-html, body { overflow-x: hidden; }
+body{
+  background: var(--preto);
+  color: var(--branco);
+  font-family: var(--fonte);
+  line-height: 1.5;
+}
 
 /* ===== Header ===== */
 header{
@@ -32,7 +30,7 @@ header{
   display:flex; align-items: center; justify-content: space-between; gap:1rem;
 }
 .header-actions{ display:flex; gap:.6rem; align-items:center; flex-wrap:wrap; }
-.logo{ height: 56px; }
+.logo{ height: 44px; }
 
 /* Inputs */
 input[type="text"], select{
@@ -132,27 +130,13 @@ button.icon{
   position:fixed; inset:0; background: rgba(0,0,0,.55); backdrop-filter: blur(2px); z-index: 5000;
 }
 #drawer-carrinho{
-  position: fixed;
-  top: 0;
-  right: 0; /* garantir alinhamento na borda direita */
-  left: auto;
-  height: 100vh;
-  width: 420px; /* largura fixa para evitar cálculos com scrollbars */
-  max-width: 92vw; /* responsivo em telas pequenas */
+  position: fixed; top: 0; right: 0; height: 100vh; width: min(420px, 100%);
   background: linear-gradient(180deg, #141416, #0f0f11);
   border-left: 1px solid rgba(255,255,255,.12);
   box-shadow: -12px 0 30px rgba(0,0,0,.55);
   padding: 1rem; z-index: 6000;
   color: #fff; display:flex; flex-direction:column; gap:1rem;
-  overflow-y: auto; -webkit-overflow-scrolling: touch;
-  box-sizing: border-box;
 }
-/* Garantir que o conteúdo interno não estoure a largura do drawer */
-#drawer-carrinho * { box-sizing: border-box; }
-
-/* Quando o drawer estiver aberto, o overlay cobre toda a tela */
-#overlay{ left:0; right:0; }
-
 /* Garantir que o atributo HTML [hidden] oculte realmente os elementos (autor CSS não deve sobrescrever isso) */
 #overlay[hidden],
 #drawer-carrinho[hidden] {
@@ -177,3 +161,25 @@ footer{
   .header-content{ flex-wrap:wrap; }
   .logo{ height: 36px; }
 }
+.card-produto .sizes {
+  display:flex;
+  gap:0.4rem;
+  margin:0.75rem 0;
+  flex-wrap:wrap;
+}
+.card-produto .sizes button {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,.12);
+  color: var(--cinza);
+  padding: .35rem .6rem;
+  border-radius: 999px;
+  font-weight:600;
+  cursor:pointer;
+}
+.card-produto .sizes button.ativo {
+  background: linear-gradient(135deg, var(--rosa), #ff4f96);
+  color:#fff;
+  border-color:var(--rosa);
+}
+/* garantir o logo sem fundo branco */
+.logo{ background: transparent; border-radius: 0; }
